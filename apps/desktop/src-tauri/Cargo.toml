@@ -1,0 +1,30 @@
+[package]
+name = "skyos-desktop"
+version = "0.1.0"
+description = "SkyOS Desktop Preview"
+authors = ["SkyOS"]
+edition = "2021"
+
+[lib]
+name = "skyos_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+sky-core = { path = "../../../crates/sky-core" }
+aircraft-provider = { path = "../../../crates/aircraft-provider" }
+airport-data = { path = "../../../crates/airport-data" }
+axum = { version = "0.8", features = ["ws"] }
+tower-http = { version = "0.6", features = ["cors"] }
+futures-util = "0.3"
+tokio-stream = "0.1"
+thiserror = { workspace = true }
+parking_lot = "0.12"
+toml = "0.8"

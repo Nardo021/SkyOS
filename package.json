@@ -1,0 +1,14 @@
+{
+  "name": "skyos",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "pnpm --filter @skyos/desktop tauri dev",
+    "build": "pnpm --filter @skyos/desktop tauri build",
+    "desktop:dev": "pnpm --filter @skyos/desktop tauri dev",
+    "desktop:build": "pnpm --filter @skyos/desktop build"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  }
+}
