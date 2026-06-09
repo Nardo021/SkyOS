@@ -1,6 +1,6 @@
 [package]
 name = "skyos-desktop"
-version = "1.0.0"
+version = "1.3.0"
 description = "SkyOS Desktop Preview"
 authors = ["SkyOS"]
 edition = "2021"
@@ -22,7 +22,10 @@ sky-core = { path = "../../../crates/sky-core" }
 aircraft-provider = { path = "../../../crates/aircraft-provider" }
 airport-data = { path = "../../../crates/airport-data" }
 axum = { version = "0.8", features = ["ws"] }
-tower-http = { version = "0.6", features = ["cors"] }
+tower-http = { version = "0.6", features = ["cors", "fs"] }
+uuid = { version = "1", features = ["v4"] }
+dirs = "6"
+local-ip-address = "0.6"
 futures-util = "0.3"
 tokio-stream = "0.1"
 thiserror = { workspace = true }

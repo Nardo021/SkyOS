@@ -33,6 +33,15 @@ export interface Aircraft {
   origin?: string;
   /** @deprecated Use `destinationIcao` */
   destination?: string;
+  airline?: string;
+  typeName?: string;
+  registration?: string;
+  originName?: string;
+  destName?: string;
+  originLat?: number;
+  originLon?: number;
+  destLat?: number;
+  destLon?: number;
 }
 
 export type AirportCodeFormat = "icao" | "iata";

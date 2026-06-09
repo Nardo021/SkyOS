@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
-use aircraft_provider::{enrich_aircraft_routes, fetch_live_with_fallback};
+use aircraft_provider::{enrich_aircraft, fetch_live_with_fallback};
 use airport_data::runways_for_observer;
 use sky_core::aircraft_list_to_sky_objects;
 
@@ -57,9 +57,15 @@ pub async fn run_poll_loop(state: Arc<AppState>) {
             last_runway_fetch = Instant::now();
         }
 
-        let snapshot =
-            fetch_aircraft_snapshot(observer, radius_km, &cached_runways, &cached_labels).await;
-        state.publish(snapshot);
+        let snapshot = fetch_aircraft_snapshot(
+            observer,
+            radius_km,
+            &cached_runways,
+            &cached_labels,
+            &state.cache_dir.parent().unwrap_or(&state.cache_dir),
+        )
+        .await;
+        state.publish_snapshot(snapshot);
 
         tokio::time::sleep(Duration::from_secs(refresh_secs.max(1))).await;
     }
@@ -70,7 +76,10 @@ async fn fetch_aircraft_snapshot(
     radius_km: f32,
     runways: &[sky_core::RunwaySegment],
     airport_labels: &[sky_core::AirportLabel],
+    cache_base: &std::path::Path,
 ) -> WsSnapshot {
+    aircraft_provider::init_cache_dir(cache_base);
+
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
@@ -79,7 +88,7 @@ async fn fetch_aircraft_snapshot(
     let (mut aircraft, source, error) =
         fetch_live_with_fallback(observer.lat, observer.lon, radius_km).await;
 
-    enrich_aircraft_routes(&mut aircraft).await;
+    enrich_aircraft(&mut aircraft).await;
 
     let sky_objects = aircraft_list_to_sky_objects(observer, &aircraft);
     let aircraft_count = aircraft.len();

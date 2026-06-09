@@ -90,6 +90,15 @@ fn normalize_one(raw: AirplanesLiveAircraft) -> Option<Aircraft> {
         destination_iata: None,
         origin: None,
         destination: None,
+        airline: None,
+        type_name: None,
+        registration: None,
+        origin_name: None,
+        dest_name: None,
+        origin_lat: None,
+        origin_lon: None,
+        dest_lat: None,
+        dest_lon: None,
     })
 }
 
@@ -141,6 +150,15 @@ fn normalize_opensky_one(row: Option<Vec<serde_json::Value>>) -> Option<Aircraft
         destination_iata: None,
         origin: None,
         destination: None,
+        airline: None,
+        type_name: None,
+        registration: None,
+        origin_name: None,
+        dest_name: None,
+        origin_lat: None,
+        origin_lon: None,
+        dest_lat: None,
+        dest_lon: None,
     })
 }
 

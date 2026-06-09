@@ -4,6 +4,7 @@ use serde::Serialize;
 use tauri::State;
 
 use crate::config::{AppConfig, ObserverConfig};
+use crate::sky_config::SkyConfig;
 use crate::state::AppState;
 
 #[derive(Debug, Serialize)]
@@ -70,4 +71,32 @@ pub fn set_refresh_secs(refresh_secs: u64, state: State<'_, Arc<AppState>>) -> R
     }
     state.config.write().data.refresh_secs = refresh_secs;
     Ok(())
+}
+
+#[tauri::command]
+pub fn get_sky_config(state: State<'_, Arc<AppState>>) -> SkyConfig {
+    state.sky_store.get()
+}
+
+#[tauri::command]
+pub fn patch_sky_config(
+    patch: serde_json::Value,
+    state: State<'_, Arc<AppState>>,
+) -> Result<SkyConfig, String> {
+    state.sky_store.patch(patch, &state.config)
+}
+
+#[tauri::command]
+pub fn reset_sky_config(state: State<'_, Arc<AppState>>) -> SkyConfig {
+    state.sky_store.reset(&state.config)
+}
+
+#[tauri::command]
+pub fn regenerate_remote_token(state: State<'_, Arc<AppState>>) -> String {
+    state.sky_store.regenerate_token()
+}
+
+#[tauri::command]
+pub fn get_lan_http_url(state: State<'_, Arc<AppState>>) -> Option<String> {
+    state.lan_http_url()
 }

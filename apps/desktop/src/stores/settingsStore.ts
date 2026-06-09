@@ -1,3 +1,4 @@
+import type { LocationProfile } from "@skyos/config";
 import type { LabelDensity, Theme } from "@skyos/skylight";
 import type { AirportCodeFormat } from "@skyos/types";
 import { create } from "zustand";
@@ -36,19 +37,27 @@ export function clampRenderFps(fps: number): number {
   );
 }
 
-interface SettingsState {
+export interface SettingsState {
   lat: number;
   lon: number;
   altitudeM: number;
+  locationName: string;
+  locationProfiles: LocationProfile[];
   radiusKm: number;
   refreshSecs: number;
   dataMode: "live";
+  remoteControlEnabled: boolean;
+  configSyncEnabled: boolean;
+  remoteAccessToken: string;
   viewMode: ViewMode;
   showCallsign: boolean;
   showAltitude: boolean;
   showSpeed: boolean;
   showHeading: boolean;
   showRoute: boolean;
+  showAirline: boolean;
+  showType: boolean;
+  showRegistration: boolean;
   airportCodeFormat: AirportCodeFormat;
   showTrails: boolean;
   showRunways: boolean;
@@ -87,6 +96,10 @@ interface SettingsState {
   renderFpsMode: RenderFpsMode;
   renderFps: number;
   setLocation: (lat: number, lon: number, alt: number) => void;
+  setLocationName: (name: string) => void;
+  setLocationProfiles: (profiles: LocationProfile[]) => void;
+  setRemoteControl: (enabled: boolean) => void;
+  setConfigSync: (enabled: boolean) => void;
   setRadiusKm: (r: number) => void;
   setRefreshSecs: (s: number) => void;
   setDataMode: (m: "live") => void;
@@ -103,6 +116,9 @@ interface SettingsState {
         | "showSpeed"
         | "showHeading"
         | "showRoute"
+        | "showAirline"
+        | "showType"
+        | "showRegistration"
         | "airportCodeFormat"
         | "showTrails"
         | "showRunways"
@@ -161,15 +177,23 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   lat: -33.79757042903397,
   lon: 151.1853986392743,
   altitudeM: 25,
+  locationName: "Sydney",
+  locationProfiles: [],
   radiusKm: 50,
   refreshSecs: 1,
   dataMode: "live",
+  remoteControlEnabled: false,
+  configSyncEnabled: false,
+  remoteAccessToken: "",
   viewMode: "dome",
   showCallsign: true,
   showAltitude: true,
   showSpeed: true,
   showHeading: false,
   showRoute: true,
+  showAirline: true,
+  showType: true,
+  showRegistration: false,
   airportCodeFormat: "icao",
   showTrails: true,
   showRunways: true,
@@ -208,6 +232,10 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   renderFpsMode: "display",
   renderFps: DEFAULT_RENDER_FPS,
   setLocation: (lat, lon, altitudeM) => set({ lat, lon, altitudeM }),
+  setLocationName: (locationName) => set({ locationName }),
+  setLocationProfiles: (locationProfiles) => set({ locationProfiles }),
+  setRemoteControl: (remoteControlEnabled) => set({ remoteControlEnabled }),
+  setConfigSync: (configSyncEnabled) => set({ configSyncEnabled }),
   setRadiusKm: (radiusKm) => set({ radiusKm: clampRadiusKm(radiusKm) }),
   setRefreshSecs: (refreshSecs) =>
     set({ refreshSecs: clampRefreshSecs(refreshSecs) }),

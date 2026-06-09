@@ -8,10 +8,11 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { PanelCard } from "@/components/panel-card";
+import { RemoteControlCard } from "../components/RemoteControlCard";
 
 export function DataSources() {
   return (
-    <div className="mx-auto max-w-lg p-6">
+    <div className="mx-auto flex max-w-lg flex-col gap-6 p-6">
       <PanelCard title="实时数据源" icon={IconDatabase}>
         <p className="text-sm leading-relaxed text-muted-foreground">
           SkyOS 仅使用公开 ADS-B 数据，启动后自动拉取真实飞机位置。
@@ -42,6 +43,7 @@ export function DataSources() {
           秒/次，备用生效时请勿把间隔设得过低。
         </p>
       </PanelCard>
+      <RemoteControlCard />
     </div>
   );
 }

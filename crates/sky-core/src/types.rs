@@ -45,6 +45,18 @@ pub struct Aircraft {
     pub origin: Option<String>,
     /// Legacy alias for `destination_icao`.
     pub destination: Option<String>,
+    /// Airline name from static table or adsbdb.
+    pub airline: Option<String>,
+    /// Human-readable aircraft type (e.g. "Boeing 737-800").
+    pub type_name: Option<String>,
+    /// Aircraft registration.
+    pub registration: Option<String>,
+    pub origin_name: Option<String>,
+    pub dest_name: Option<String>,
+    pub origin_lat: Option<f64>,
+    pub origin_lon: Option<f64>,
+    pub dest_lat: Option<f64>,
+    pub dest_lon: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

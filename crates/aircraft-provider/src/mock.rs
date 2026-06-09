@@ -51,6 +51,15 @@ impl AircraftProvider for MockProvider {
                     destination_iata: None,
                     origin: None,
                     destination: None,
+                    airline: None,
+                    type_name: None,
+                    registration: None,
+                    origin_name: None,
+                    dest_name: None,
+                    origin_lat: None,
+                    origin_lon: None,
+                    dest_lat: None,
+                    dest_lon: None,
                 }
             })
             .collect();

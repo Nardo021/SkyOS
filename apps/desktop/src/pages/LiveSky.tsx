@@ -14,6 +14,7 @@ import { RightPanel } from "../components/RightPanel";
 import { StatusBar } from "../components/StatusBar";
 import { ViewModeSwitcher } from "../components/ViewModeSwitcher";
 import { DebugMapView } from "../components/DebugMapView";
+import { httpBaseFromWsUrl } from "../lib/tauriConfig";
 import { useSkyStore } from "../stores/skyStore";
 import { useSettingsStore } from "../stores/settingsStore";
 
@@ -100,7 +101,7 @@ export function LiveSky({ wsUrl }: LiveSkyProps) {
     <div ref={containerRef} className="flex h-full flex-col bg-background">
       <div className="flex min-h-0 flex-1 gap-3 p-3">
         <aside className="w-56 shrink-0">
-          <LeftPanel />
+          <LeftPanel httpBase={httpBaseFromWsUrl(wsUrl)} />
         </aside>
 
         <main className="flex min-w-0 flex-1 flex-col gap-2">

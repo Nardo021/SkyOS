@@ -6,6 +6,11 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { LiveSky } from "../pages/LiveSky";
 import { DataSources } from "../pages/DataSources";
+import {
+  hydrateFromSkyConfig,
+  initConfigSync,
+  loadSkyConfig,
+} from "../lib/configBridge";
 import { connectSkySocket } from "../lib/skySocket";
 import { loadConfig, setDataMode } from "../lib/tauriConfig";
 import { useSkyStore } from "../stores/skyStore";
@@ -24,7 +29,8 @@ export function App() {
   const hydrate = useSettingsStore((s) => s.hydrateFromConfig);
 
   useEffect(() => {
-    let disconnect: (() => void) | undefined;
+    let conn: ReturnType<typeof connectSkySocket> | undefined;
+    let stopSync: (() => void) | undefined;
     let cancelled = false;
 
     void (async () => {
@@ -43,18 +49,29 @@ export function App() {
             mode: "live",
           });
           await setDataMode("live");
+          await loadSkyConfig();
         }
       } catch {
         /* browser-only dev without Tauri */
       }
       if (!cancelled) {
-        disconnect = connectSkySocket(url, setSnapshot, setWsStatus);
+        stopSync = initConfigSync();
+        conn = connectSkySocket(
+          url,
+          {
+            onSnapshot: setSnapshot,
+            onConfig: hydrateFromSkyConfig,
+            onStatus: setWsStatus,
+          },
+          "display",
+        );
       }
     })();
 
     return () => {
       cancelled = true;
-      disconnect?.();
+      stopSync?.();
+      conn?.disconnect();
     };
   }, [setSnapshot, setWsStatus, hydrate]);
 

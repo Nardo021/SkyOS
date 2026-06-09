@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
 import { IconClock, IconMaximize } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { WsStatusBadge } from "@/components/ws-status-badge";
+import { getLanHttpUrl } from "../lib/tauriConfig";
+import { useSettingsStore } from "../stores/settingsStore";
 import { useSkyStore } from "../stores/skyStore";
 
 interface StatusBarProps {
@@ -11,6 +14,16 @@ interface StatusBarProps {
 
 export function StatusBar({ wsUrl, onFullscreen }: StatusBarProps) {
   const { wsStatus, source, error, updatedAt } = useSkyStore();
+  const remoteControlEnabled = useSettingsStore((s) => s.remoteControlEnabled);
+  const [lanUrl, setLanUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!remoteControlEnabled) {
+      setLanUrl(null);
+      return;
+    }
+    void getLanHttpUrl().then(setLanUrl);
+  }, [remoteControlEnabled]);
 
   const statusMap = {
     connected: "connected" as const,
@@ -34,6 +47,11 @@ export function StatusBar({ wsUrl, onFullscreen }: StatusBarProps) {
         />
         <Separator orientation="vertical" className="h-4" />
         <span className="text-muted-foreground">{wsUrl}</span>
+        {lanUrl ? (
+          <span className="text-primary" title="内网遥控地址">
+            · {lanUrl}
+          </span>
+        ) : null}
         <span className="text-muted-foreground">· {source}</span>
         {error ? (
           <span className="text-destructive">{error}</span>

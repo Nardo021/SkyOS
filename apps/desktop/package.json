@@ -1,7 +1,7 @@
 {
   "name": "@skyos/desktop",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@base-ui/react": "^1.5.0",
     "@fontsource-variable/geist": "^5.2.9",
+    "@skyos/config": "workspace:*",
     "@skyos/renderer": "workspace:*",
     "@skyos/skylight": "workspace:*",
     "@skyos/types": "workspace:*",

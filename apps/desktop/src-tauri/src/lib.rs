@@ -1,9 +1,12 @@
 mod commands;
 mod config;
+mod config_store;
+mod geocode;
+mod hub;
+mod sky_config;
 mod state;
 mod stream;
 mod tle;
-mod ws;
 
 use config::load_config;
 use state::AppState;
@@ -25,7 +28,7 @@ pub fn run() {
                 let _ = airport_data::ensure_database(&preload_cache).await;
             });
             tauri::async_runtime::spawn(async move {
-                ws::start_ws_server(ws_state).await;
+                hub::start_server(ws_state).await;
             });
             tauri::async_runtime::spawn(async move {
                 stream::run_poll_loop(poll_state).await;
@@ -40,6 +43,11 @@ pub fn run() {
             commands::set_radius_km,
             commands::set_data_mode,
             commands::set_refresh_secs,
+            commands::get_sky_config,
+            commands::patch_sky_config,
+            commands::reset_sky_config,
+            commands::regenerate_remote_token,
+            commands::get_lan_http_url,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

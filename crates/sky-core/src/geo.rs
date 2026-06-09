@@ -206,6 +206,15 @@ mod tests {
             destination_iata: None,
             origin: None,
             destination: None,
+            airline: None,
+            type_name: None,
+            registration: None,
+            origin_name: None,
+            dest_name: None,
+            origin_lat: None,
+            origin_lon: None,
+            dest_lat: None,
+            dest_lon: None,
         };
         assert!(aircraft_to_sky_object(observer, &ac).is_none());
     }

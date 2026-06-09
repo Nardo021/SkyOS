@@ -45,6 +45,7 @@ import {
   type RenderFpsMode,
 } from "../stores/settingsStore";
 import type { AirportCodeFormat } from "@skyos/types";
+import { IssPassCard } from "./IssPassCard";
 
 function SettingSwitch({
   id,
@@ -145,6 +146,27 @@ export function RendererSettingsMenu() {
                   icon={IconRoute}
                   checked={s.showRoute}
                   onCheckedChange={(v) => s.setRenderer({ showRoute: v })}
+                />
+                <SettingSwitch
+                  id="popover-show-airline"
+                  label="航司"
+                  icon={IconTag}
+                  checked={s.showAirline}
+                  onCheckedChange={(v) => s.setRenderer({ showAirline: v })}
+                />
+                <SettingSwitch
+                  id="popover-show-type"
+                  label="机型"
+                  icon={IconPlane}
+                  checked={s.showType}
+                  onCheckedChange={(v) => s.setRenderer({ showType: v })}
+                />
+                <SettingSwitch
+                  id="popover-show-registration"
+                  label="注册号"
+                  icon={IconTag}
+                  checked={s.showRegistration}
+                  onCheckedChange={(v) => s.setRenderer({ showRegistration: v })}
                 />
                 <Field>
                   <FieldLabel className="text-xs text-muted-foreground">
@@ -363,6 +385,15 @@ export function RendererSettingsMenu() {
                       onCheckedChange={(v) => s.setCeiling({ ceilingShowDestArc: v })}
                     />
                     <SettingSwitch
+                      id="popover-ceiling-route-detail"
+                      label="航线详情"
+                      icon={IconRoute}
+                      checked={s.ceilingShowRouteDetail}
+                      onCheckedChange={(v) =>
+                        s.setCeiling({ ceilingShowRouteDetail: v })
+                      }
+                    />
+                    <SettingSwitch
                       id="popover-ceiling-emergency"
                       label="紧急代码高亮"
                       icon={IconPlane}
@@ -371,6 +402,63 @@ export function RendererSettingsMenu() {
                         s.setCeiling({ ceilingHighlightEmergency: v })
                       }
                     />
+                    <Field>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <FieldLabel>尾迹长度</FieldLabel>
+                        <span className="font-mono">{s.ceilingTrailSeconds}s</span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={120}
+                        step={5}
+                        value={[s.ceilingTrailSeconds]}
+                        onValueChange={(v) => {
+                          const next = Array.isArray(v) ? v[0] : v;
+                          if (typeof next === "number") {
+                            s.setCeiling({ ceilingTrailSeconds: next });
+                          }
+                        }}
+                      />
+                    </Field>
+                    <Field>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <FieldLabel>过期剔除</FieldLabel>
+                        <span className="font-mono">{s.ceilingStaleSec}s</span>
+                      </div>
+                      <Slider
+                        min={5}
+                        max={60}
+                        step={1}
+                        value={[s.ceilingStaleSec]}
+                        onValueChange={(v) => {
+                          const next = Array.isArray(v) ? v[0] : v;
+                          if (typeof next === "number") {
+                            s.setCeiling({ ceilingStaleSec: next });
+                          }
+                        }}
+                      />
+                    </Field>
+                    <Field>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <FieldLabel>最大外推</FieldLabel>
+                        <span className="font-mono">
+                          {s.ceilingMaxExtrapolationSec}s
+                        </span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={15}
+                        step={1}
+                        value={[s.ceilingMaxExtrapolationSec]}
+                        onValueChange={(v) => {
+                          const next = Array.isArray(v) ? v[0] : v;
+                          if (typeof next === "number") {
+                            s.setCeiling({ ceilingMaxExtrapolationSec: next });
+                          }
+                        }}
+                      />
+                    </Field>
+                    <IssPassCard />
                     <Field>
                       <FieldLabel className="text-xs text-muted-foreground">
                         标签密度

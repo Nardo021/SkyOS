@@ -116,7 +116,7 @@ export function CeilingCalibrationControls() {
             type="number"
             min={0}
             max={359}
-            className="h-7 w-16 font-mono text-xs"
+            className="h-7 w-32 font-mono text-xs"
             value={draftDeg}
             disabled={ceilingBearingLocked}
             onChange={(e) => setDraftDeg(e.target.value)}

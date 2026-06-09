@@ -21,6 +21,9 @@ export interface SkyosCeilingSettings {
   showAltitude: boolean;
   showSpeed: boolean;
   showRoute: boolean;
+  showAirline: boolean;
+  showType: boolean;
+  showRegistration: boolean;
   showTrails: boolean;
   showRunways: boolean;
   showHorizon: boolean;
@@ -67,10 +70,19 @@ export function skyosToSkylightAircraft(ac: Aircraft): SkylightAircraft {
     baroRate: ac.verticalRate ?? null,
     onGround: altFt != null && altFt < 50 && gs < 35,
     typeCode: ac.icaoType,
+    typeName: ac.typeName,
+    airline: ac.airline,
+    registration: ac.registration,
     category:
       ac.emitterCategory != null ? `A${ac.emitterCategory}` : undefined,
     origin: ac.originIcao ?? ac.origin,
     destination: ac.destinationIcao ?? ac.destination,
+    originName: ac.originName,
+    destName: ac.destName,
+    originLat: ac.originLat,
+    originLon: ac.originLon,
+    destLat: ac.destLat,
+    destLon: ac.destLon,
   };
 }
 
@@ -110,6 +122,9 @@ export function skyosToDisplayConfig(
       altitude: settings.showAltitude,
       speed: settings.showSpeed,
       destination: settings.showRoute,
+      airline: settings.showAirline,
+      type: settings.showType,
+      registration: settings.showRegistration,
     },
     rangeRings: settings.showHorizon,
     compass: settings.showHorizon,

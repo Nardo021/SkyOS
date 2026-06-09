@@ -19,8 +19,10 @@ Ceiling mode is ported from [skylight-main](skylight-main/) — Canvas 2D, altit
 - **Dome**: Three.js (`@react-three/fiber`)
 - **Ceiling**: Canvas 2D ([`@skyos/skylight`](packages/skylight/)) — `astronomy-engine`, `satellite.js`
 - **Backend**: Rust (`sky-core`, `aircraft-provider`, `airport-data`)
-- **Stream**: WebSocket `ws://127.0.0.1:9731/sky`
+- **Stream**: WebSocket v2 `ws://127.0.0.1:9731/sky` (typed `snapshot` / `config` / `tle`)
+- **Config**: `@skyos/config` (`SkyConfig`, merge, persistence at `%APPDATA%/skyos/config.json`)
 - **TLE**: Tauri `get_tle` command (Celestrak cache for ISS / visual satellites)
+- **Remote**: optional LAN control SPA at `/control/` (see below)
 
 ## Develop
 
@@ -51,10 +53,28 @@ cd apps/desktop
 pnpm dlx shadcn@latest add <component>
 ```
 
+## LAN remote control
+
+Two independent toggles in **Data Sources → 内网遥控**:
+
+| Setting | Effect |
+|---------|--------|
+| **启用遥控页** | Binds HTTP/WS to `0.0.0.0`, serves `apps/remote` at `/control/`, generates `remoteAccessToken` |
+| **配置双向同步** | Allows `patchConfig` from control clients; when off, phone UI is read-only |
+
+1. Build the remote SPA: `pnpm --filter @skyos/remote build`
+2. In the desktop app, enable **启用遥控页** and copy the token
+3. On your phone (same Wi‑Fi), open the LAN URL shown in the status bar (e.g. `http://192.168.x.x:9731/control/`)
+4. Paste the token — full live-tune settings (no ceiling preview)
+
+Allow inbound TCP on port **9731** in Windows Firewall if the phone cannot connect.
+
 ## Project layout
 
 ```
 apps/desktop/          Tauri shell + React UI
+apps/remote/           Mobile control SPA (mounted at /control/)
+packages/config/       SkyConfig, merge, WS message types
 packages/types/        Shared TypeScript types
 packages/ui/           UI primitives
 packages/renderer/     Dome scene + SkylightCeilingView wrapper
@@ -81,7 +101,10 @@ Copy GLB files into `apps/desktop/public/models/` (`airplane.glb` + per-type fil
 ## Tests
 
 ```bash
+pnpm --filter @skyos/config test
 pnpm --filter @skyos/renderer test
 pnpm --filter @skyos/skylight test
 pnpm --filter @skyos/coordinates test
+cargo test -p aircraft-provider
+cargo test -p skyos-desktop
 ```

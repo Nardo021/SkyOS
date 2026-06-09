@@ -19,6 +19,9 @@ const baseSettings: SkyosCeilingSettings = {
   showAltitude: true,
   showSpeed: false,
   showRoute: true,
+  showAirline: true,
+  showType: true,
+  showRegistration: false,
   showTrails: true,
   showRunways: true,
   showHorizon: true,
@@ -65,6 +68,11 @@ describe("skyosToSkylightAircraft", () => {
       icaoType: "B738",
       originIcao: "YSSY",
       destinationIcao: "KLAX",
+      airline: "Qantas",
+      typeName: "Boeing 737-800",
+      destName: "Los Angeles",
+      destLat: 33.9,
+      destLon: -118.4,
     };
     const out = skyosToSkylightAircraft(ac);
     expect(out.hex).toBe("abc123");
@@ -72,8 +80,12 @@ describe("skyosToSkylightAircraft", () => {
     expect(out.altBaro).toBe(35000);
     expect(out.gs).toBe(450);
     expect(out.typeCode).toBe("B738");
+    expect(out.airline).toBe("Qantas");
+    expect(out.typeName).toBe("Boeing 737-800");
     expect(out.origin).toBe("YSSY");
     expect(out.destination).toBe("KLAX");
+    expect(out.destName).toBe("Los Angeles");
+    expect(out.destLat).toBe(33.9);
     expect(out.onGround).toBe(false);
   });
 });

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { LocationProfile } from "@skyos/config";
 import {
   IconAlertTriangle,
   IconDatabase,
@@ -6,6 +7,8 @@ import {
   IconPlane,
   IconDeviceFloppy,
   IconRadio,
+  IconSearch,
+  IconTrash,
 } from "@tabler/icons-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -29,27 +32,108 @@ import {
   useSettingsStore,
 } from "../stores/settingsStore";
 import { useSkyStore } from "../stores/skyStore";
-import {
-  setObserver,
-  setRadiusKm,
-  setRefreshSecs,
-} from "../lib/tauriConfig";
+import { applySkyPatch } from "../lib/configBridge";
+import { setObserver, setRadiusKm, setRefreshSecs } from "../lib/tauriConfig";
 
-export function LeftPanel() {
+type LeftPanelProps = {
+  httpBase?: string;
+};
+
+export function LeftPanel({ httpBase = "http://127.0.0.1:9731" }: LeftPanelProps) {
   const {
     lat,
     lon,
     altitudeM,
+    locationName,
+    locationProfiles,
     radiusKm,
     refreshSecs,
     setLocation,
+    setLocationName,
+    setLocationProfiles,
     setRadiusKm: setRadiusLocal,
     setRefreshSecs: setRefreshLocal,
   } = useSettingsStore();
   const { source, aircraftCount, updatedAt, error } = useSkyStore();
+  const [geoQuery, setGeoQuery] = useState("");
+  const [geoBusy, setGeoBusy] = useState(false);
+  const [geoErr, setGeoErr] = useState<string | null>(null);
 
   const applyLocation = async () => {
     await setObserver(lat, lon, altitudeM);
+    await applySkyPatch({
+      centerLat: lat,
+      centerLon: lon,
+      altitudeM,
+      locationName,
+    });
+  };
+
+  const searchLocation = async () => {
+    const q = geoQuery.trim();
+    if (!q) return;
+    setGeoBusy(true);
+    setGeoErr(null);
+    try {
+      const r = await fetch(`${httpBase}/api/geocode?q=${encodeURIComponent(q)}`);
+      if (!r.ok) {
+        setGeoErr(r.status === 404 ? `未找到「${q}」` : "搜索失败");
+        return;
+      }
+      const hit = (await r.json()) as { lat: number; lon: number; name: string };
+      setLocation(hit.lat, hit.lon, altitudeM);
+      setLocationName(hit.name);
+      await applySkyPatch({
+        centerLat: hit.lat,
+        centerLon: hit.lon,
+        locationName: hit.name,
+      });
+      await setObserver(hit.lat, hit.lon, altitudeM);
+    } catch {
+      setGeoErr("搜索失败");
+    } finally {
+      setGeoBusy(false);
+    }
+  };
+
+  const genId = () =>
+    Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  const atCurrent = (p: { lat: number; lon: number }) =>
+    Math.abs(p.lat - lat) < 1e-4 && Math.abs(p.lon - lon) < 1e-4;
+
+  const saveProfile = async () => {
+    const name = locationName.trim() || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    const profile: LocationProfile = {
+      id: genId(),
+      name,
+      lat,
+      lon,
+      radiusKm,
+    };
+    const rest = locationProfiles.filter((p) => !atCurrent(p));
+    const next = [...rest, profile];
+    setLocationProfiles(next);
+    await applySkyPatch({ locationProfiles: next });
+  };
+
+  const applyProfile = async (p: LocationProfile) => {
+    setLocation(p.lat, p.lon, altitudeM);
+    setLocationName(p.name);
+    setRadiusLocal(p.radiusKm);
+    await applySkyPatch({
+      centerLat: p.lat,
+      centerLon: p.lon,
+      locationName: p.name,
+      radiusKm: p.radiusKm,
+    });
+    await setObserver(p.lat, p.lon, altitudeM);
+  };
+
+  const removeProfile = async (id: string) => {
+    const next = locationProfiles.filter((p) => p.id !== id);
+    setLocationProfiles(next);
+    await applySkyPatch({ locationProfiles: next });
   };
 
   const backendSyncRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -109,6 +193,37 @@ export function LeftPanel() {
       ) : null}
 
       <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="location-search">地点搜索</FieldLabel>
+          <div className="flex gap-2">
+            <Input
+              id="location-search"
+              placeholder="城市名或 lat,lon"
+              value={geoQuery}
+              onChange={(e) => setGeoQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void searchLocation();
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              disabled={geoBusy}
+              onClick={() => void searchLocation()}
+              aria-label="搜索地点"
+            >
+              <IconSearch />
+            </Button>
+          </div>
+          {locationName ? (
+            <FieldDescription>当前：{locationName}</FieldDescription>
+          ) : null}
+          {geoErr ? (
+            <FieldDescription className="text-destructive">{geoErr}</FieldDescription>
+          ) : null}
+        </Field>
+
         <div className="grid grid-cols-2 gap-3">
           <Field>
             <FieldLabel htmlFor="lat">Lat</FieldLabel>
@@ -147,10 +262,43 @@ export function LeftPanel() {
           </Field>
         </div>
 
-        <Button onClick={applyLocation} className="w-full">
+        <Button onClick={() => void applyLocation()} className="w-full">
           <IconDeviceFloppy data-icon="inline-start" />
           Apply location
         </Button>
+
+        <div className="flex flex-col gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={() => void saveProfile()}>
+            保存当前地点
+          </Button>
+          {locationProfiles.length > 0 ? (
+            <ul className="flex flex-col gap-1">
+              {locationProfiles.map((p) => (
+                <li key={p.id} className="flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="flex-1 justify-start text-xs"
+                    onClick={() => void applyProfile(p)}
+                  >
+                    {p.name}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="size-7 px-0"
+                    onClick={() => void removeProfile(p.id)}
+                    aria-label={`删除 ${p.name}`}
+                  >
+                    <IconTrash className="size-3.5" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
 
         <Field>
           <div className="flex items-center justify-between gap-2">
