@@ -1,8 +1,10 @@
+import type { LabelDensity, Theme } from "@skyos/skylight";
 import type { AirportCodeFormat } from "@skyos/types";
 import { create } from "zustand";
 
 export type ViewMode = "dome" | "ceiling" | "map";
 export type AircraftDisplayFilter = "all" | "air" | "ground";
+export type CeilingProjectionMode = "map" | "sky";
 
 export const MIN_RADIUS_KM = 1;
 export const MAX_RADIUS_KM = 100;
@@ -39,7 +41,6 @@ interface SettingsState {
   lon: number;
   altitudeM: number;
   radiusKm: number;
-  /** Aircraft ADS-B poll interval (seconds). */
   refreshSecs: number;
   dataMode: "live";
   viewMode: ViewMode;
@@ -56,11 +57,32 @@ interface SettingsState {
   useDistanceScale: boolean;
   iconScale: number;
   aircraftFilter: AircraftDisplayFilter;
-  /** Ceiling: direction placed at top of view (0° = north). */
   ceilingBearingDeg: number;
-  /** When true, ceiling bearing is fixed (no drag-to-rotate). */
   ceilingBearingLocked: boolean;
-  /** Smooth aircraft motion between ADS-B polls (Sky Dome). */
+  ceilingProjectionMode: CeilingProjectionMode;
+  ceilingMirrorX: boolean;
+  ceilingMirrorY: boolean;
+  ceilingLabelRotationDeg: number;
+  ceilingTheme: Theme;
+  ceilingBrightness: number;
+  ceilingGlyphSizePx: number;
+  ceilingLabelDensity: LabelDensity;
+  ceilingNearestN: number;
+  ceilingHighlightEmergency: boolean;
+  ceilingShowDestArc: boolean;
+  ceilingShowRouteDetail: boolean;
+  ceilingTrailSeconds: number;
+  ceilingStaleSec: number;
+  ceilingMaxExtrapolationSec: number;
+  ceilingShowStars: boolean;
+  ceilingShowSun: boolean;
+  ceilingShowMoon: boolean;
+  ceilingShowPlanets: boolean;
+  ceilingShowSatellites: boolean;
+  ceilingSatelliteLabels: boolean;
+  ceilingStarMagLimit: number;
+  ceilingStarLabelMagLimit: number;
+  ceilingSkyTimeOffsetMin: number;
   interpolateMotion: boolean;
   renderFpsMode: RenderFpsMode;
   renderFps: number;
@@ -91,6 +113,37 @@ interface SettingsState {
         | "interpolateMotion"
         | "renderFpsMode"
         | "renderFps"
+      >
+    >,
+  ) => void;
+  setCeiling: (
+    p: Partial<
+      Pick<
+        SettingsState,
+        | "ceilingProjectionMode"
+        | "ceilingMirrorX"
+        | "ceilingMirrorY"
+        | "ceilingLabelRotationDeg"
+        | "ceilingTheme"
+        | "ceilingBrightness"
+        | "ceilingGlyphSizePx"
+        | "ceilingLabelDensity"
+        | "ceilingNearestN"
+        | "ceilingHighlightEmergency"
+        | "ceilingShowDestArc"
+        | "ceilingShowRouteDetail"
+        | "ceilingTrailSeconds"
+        | "ceilingStaleSec"
+        | "ceilingMaxExtrapolationSec"
+        | "ceilingShowStars"
+        | "ceilingShowSun"
+        | "ceilingShowMoon"
+        | "ceilingShowPlanets"
+        | "ceilingShowSatellites"
+        | "ceilingSatelliteLabels"
+        | "ceilingStarMagLimit"
+        | "ceilingStarLabelMagLimit"
+        | "ceilingSkyTimeOffsetMin"
       >
     >,
   ) => void;
@@ -127,6 +180,30 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   aircraftFilter: "all",
   ceilingBearingDeg: 0,
   ceilingBearingLocked: false,
+  ceilingProjectionMode: "sky",
+  ceilingMirrorX: true,
+  ceilingMirrorY: false,
+  ceilingLabelRotationDeg: 0,
+  ceilingTheme: "ambient",
+  ceilingBrightness: 1,
+  ceilingGlyphSizePx: 22,
+  ceilingLabelDensity: "all",
+  ceilingNearestN: 5,
+  ceilingHighlightEmergency: true,
+  ceilingShowDestArc: true,
+  ceilingShowRouteDetail: false,
+  ceilingTrailSeconds: 45,
+  ceilingStaleSec: 20,
+  ceilingMaxExtrapolationSec: 5,
+  ceilingShowStars: true,
+  ceilingShowSun: true,
+  ceilingShowMoon: true,
+  ceilingShowPlanets: true,
+  ceilingShowSatellites: true,
+  ceilingSatelliteLabels: false,
+  ceilingStarMagLimit: 2.6,
+  ceilingStarLabelMagLimit: 0.3,
+  ceilingSkyTimeOffsetMin: 0,
   interpolateMotion: true,
   renderFpsMode: "display",
   renderFps: DEFAULT_RENDER_FPS,
@@ -142,6 +219,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setCeilingBearingLocked: (ceilingBearingLocked) =>
     set({ ceilingBearingLocked }),
   setRenderer: (p) => set(p),
+  setCeiling: (p) => set(p),
   hydrateFromConfig: (c) =>
     set({
       lat: c.lat,

@@ -1,6 +1,6 @@
 {
   "name": "@skyos/renderer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
@@ -27,6 +27,7 @@
     "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.0.0",
     "@skyos/coordinates": "workspace:*",
+    "@skyos/skylight": "workspace:*",
     "@skyos/types": "workspace:*",
     "@tabler/icons-react": "^3.44.0",
     "clsx": "^2.1.1",

@@ -6,6 +6,7 @@ use sky_core::{Aircraft, AirportLabel, Observer, RunwaySegment, SkyObject};
 use tokio::sync::broadcast;
 
 use crate::config::AppConfig;
+use crate::tle::TleStore;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -26,17 +27,20 @@ pub struct AppState {
     pub latest: RwLock<Option<WsSnapshot>>,
     pub tx: broadcast::Sender<String>,
     pub cache_dir: PathBuf,
+    pub tle_store: std::sync::Arc<TleStore>,
 }
 
 impl AppState {
     pub fn new(config: AppConfig) -> Arc<Self> {
         let (tx, _) = broadcast::channel(32);
-        let cache_dir = std::env::temp_dir().join("skyos").join("ourairports");
+        let cache_dir = std::env::temp_dir().join("skyos");
+        let tle_store = TleStore::new(cache_dir.join("tle"));
         Arc::new(Self {
             config: RwLock::new(config),
             latest: RwLock::new(None),
             tx,
-            cache_dir,
+            cache_dir: cache_dir.join("ourairports"),
+            tle_store,
         })
     }
 

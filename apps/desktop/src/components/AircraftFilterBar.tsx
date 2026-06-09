@@ -1,5 +1,5 @@
 import { IconPlane, IconPlaneArrival, IconStack2 } from "@tabler/icons-react";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   useSettingsStore,
@@ -24,8 +24,8 @@ export function AircraftFilterBar() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Label className="text-xs text-muted-foreground">显示</Label>
+    <Field orientation="horizontal" className="w-auto">
+      <FieldLabel className="text-xs text-muted-foreground">显示</FieldLabel>
       <ToggleGroup
         value={[aircraftFilter]}
         onValueChange={(v) => {
@@ -43,6 +43,6 @@ export function AircraftFilterBar() {
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
-    </div>
+    </Field>
   );
 }

@@ -1,7 +1,7 @@
 {
   "name": "@skyos/desktop",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +13,7 @@
     "@base-ui/react": "^1.5.0",
     "@fontsource-variable/geist": "^5.2.9",
     "@skyos/renderer": "workspace:*",
+    "@skyos/skylight": "workspace:*",
     "@skyos/types": "workspace:*",
     "@tabler/icons-react": "^3.44.0",
     "@tauri-apps/api": "^2",

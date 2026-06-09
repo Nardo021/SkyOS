@@ -1,0 +1,49 @@
+import type { SkyosCeilingSettings } from "@skyos/renderer";
+import { useShallow } from "zustand/react/shallow";
+import { useSettingsStore } from "../stores/settingsStore";
+
+export function useCeilingSettings(): SkyosCeilingSettings {
+  return useSettingsStore(
+    useShallow((s) => ({
+      radiusKm: s.radiusKm,
+      ceilingBearingDeg: s.ceilingBearingDeg,
+      projectionMode: s.ceilingProjectionMode,
+      mirrorX: s.ceilingMirrorX,
+      mirrorY: s.ceilingMirrorY,
+      labelRotationDeg: s.ceilingLabelRotationDeg,
+      showCallsign: s.showCallsign,
+      showAltitude: s.showAltitude,
+      showSpeed: s.showSpeed,
+      showRoute: s.showRoute,
+      showTrails: s.showTrails,
+      showRunways: s.showRunways,
+      showHorizon: s.showHorizon,
+      useAltitudeColor: s.useAltitudeColor,
+      iconScale: s.iconScale,
+      aircraftFilter: s.aircraftFilter,
+      interpolateMotion: s.interpolateMotion,
+      renderFpsMode: s.renderFpsMode,
+      renderFps: s.renderFps,
+      showStars: s.ceilingShowStars,
+      showSun: s.ceilingShowSun,
+      showMoon: s.ceilingShowMoon,
+      showPlanets: s.ceilingShowPlanets,
+      showSatellites: s.ceilingShowSatellites,
+      satelliteLabels: s.ceilingSatelliteLabels,
+      starMagLimit: s.ceilingStarMagLimit,
+      starLabelMagLimit: s.ceilingStarLabelMagLimit,
+      theme: s.ceilingTheme,
+      brightness: s.ceilingBrightness,
+      glyphSizePx: s.ceilingGlyphSizePx,
+      labelDensity: s.ceilingLabelDensity,
+      nearestN: s.ceilingNearestN,
+      highlightEmergency: s.ceilingHighlightEmergency,
+      showDestArc: s.ceilingShowDestArc,
+      showRouteDetail: s.ceilingShowRouteDetail,
+      trailSeconds: s.ceilingTrailSeconds,
+      staleSec: s.ceilingStaleSec,
+      maxExtrapolationSec: s.ceilingMaxExtrapolationSec,
+      skyTimeOffsetMin: s.ceilingSkyTimeOffsetMin,
+    })),
+  );
+}

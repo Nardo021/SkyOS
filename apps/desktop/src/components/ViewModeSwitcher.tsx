@@ -1,7 +1,7 @@
 import { IconCircle, IconMap, IconWorld } from "@tabler/icons-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AircraftFilterBar } from "./AircraftFilterBar";
-import { CeilingBearingControls } from "./CeilingBearingControls";
+import { CeilingCalibrationControls } from "./CeilingCalibrationControls";
 import { RendererSettingsMenu } from "./RendererSettingsMenu";
 import { useSettingsStore, type ViewMode } from "../stores/settingsStore";
 
@@ -31,7 +31,7 @@ export function ViewModeSwitcher() {
           </TabsList>
         </Tabs>
         <AircraftFilterBar />
-        {viewMode === "ceiling" ? <CeilingBearingControls /> : null}
+        {viewMode === "ceiling" ? <CeilingCalibrationControls /> : null}
       </div>
       <RendererSettingsMenu />
     </div>

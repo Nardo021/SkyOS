@@ -3,32 +3,13 @@ export { SkyScene } from "./SkyScene";
 export { CompassOverlay } from "./CompassOverlay";
 
 export {
-
   ceilingFlatUvFromAzEl,
-
   ceilingProjectPercent,
-
   ceilingTiledUvFromAzEl,
-
   ceilingUvFromAzEl,
-
   skyToCeilingPercent,
-
   skyToCeilingPoint,
-
 } from "./ceiling";
-
-export {
-
-  latLonToRectPercent,
-
-  latLonToRectScreenPoint,
-
-} from "./latLonToRectScreen";
-
-export { CeilingProjectionView } from "./CeilingProjectionView";
-
-export { RunwayLayer } from "./RunwayLayer";
 
 export type { AircraftDisplayFilter } from "./filter";
 
@@ -40,4 +21,8 @@ export { formatFlightRoute, pickAirportCode } from "./airportCodes";
 
 export type { RendererOptions, RenderFpsMode } from "./types";
 
+export { SkylightCeilingView } from "./SkylightCeilingView";
+export type { SkylightCeilingViewProps } from "./SkylightCeilingView";
 
+export { skyosToDisplayConfig, skyosToSkylightAircraft } from "./adapters/skyosToSkylight";
+export type { SkyosCeilingSettings } from "./adapters/skyosToSkylight";

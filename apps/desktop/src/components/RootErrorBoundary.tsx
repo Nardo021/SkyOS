@@ -1,4 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { IconAlertTriangle } from "@tabler/icons-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   children: ReactNode;
@@ -22,20 +25,15 @@ export class RootErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.error) {
       return (
-        <div className="flex h-full min-h-screen flex-col items-center justify-center gap-3 bg-background p-8 text-foreground">
-          <h1 className="text-lg font-semibold text-destructive">
-            界面加载失败
-          </h1>
-          <p className="max-w-lg text-center text-sm text-muted-foreground">
-            {this.state.error.message}
-          </p>
-          <button
-            type="button"
-            className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
-            onClick={() => this.setState({ error: null })}
-          >
+        <div className="flex h-full min-h-screen flex-col items-center justify-center gap-4 bg-background p-8">
+          <Alert variant="destructive" className="max-w-lg">
+            <IconAlertTriangle />
+            <AlertTitle>界面加载失败</AlertTitle>
+            <AlertDescription>{this.state.error.message}</AlertDescription>
+          </Alert>
+          <Button variant="outline" onClick={() => this.setState({ error: null })}>
             重试
-          </button>
+          </Button>
         </div>
       );
     }

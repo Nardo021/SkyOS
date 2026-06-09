@@ -1,6 +1,6 @@
 [package]
 name = "skyos-desktop"
-version = "0.1.0"
+version = "1.0.0"
 description = "SkyOS Desktop Preview"
 authors = ["SkyOS"]
 edition = "2021"
@@ -27,4 +27,5 @@ futures-util = "0.3"
 tokio-stream = "0.1"
 thiserror = { workspace = true }
 parking_lot = "0.12"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
 toml = "0.8"

@@ -2,6 +2,7 @@ mod commands;
 mod config;
 mod state;
 mod stream;
+mod tle;
 mod ws;
 
 use config::load_config;
@@ -34,6 +35,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::get_config,
             commands::get_ws_url,
+            commands::get_tle,
             commands::set_observer,
             commands::set_radius_km,
             commands::set_data_mode,

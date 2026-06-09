@@ -1,40 +1,28 @@
 import { useMemo, useRef } from "react";
 
 import {
-  CeilingProjectionView,
   filterAirportsInRadius,
+  SkylightCeilingView,
   SkyScene,
 } from "@skyos/renderer";
 import { cn } from "@/lib/utils";
+import { fetchTleFromBackend } from "@/lib/tle";
+import { useCeilingSettings } from "@/lib/ceilingSettings";
 
 import { LeftPanel } from "../components/LeftPanel";
-
 import { RightPanel } from "../components/RightPanel";
-
 import { StatusBar } from "../components/StatusBar";
-
 import { ViewModeSwitcher } from "../components/ViewModeSwitcher";
-
 import { DebugMapView } from "../components/DebugMapView";
-
 import { useSkyStore } from "../stores/skyStore";
-
 import { useSettingsStore } from "../stores/settingsStore";
 
-
-
 interface LiveSkyProps {
-
   wsUrl: string;
-
 }
 
-
-
 export function LiveSky({ wsUrl }: LiveSkyProps) {
-
   const containerRef = useRef<HTMLDivElement>(null);
-
   const {
     observer,
     skyObjects,
@@ -48,6 +36,7 @@ export function LiveSky({ wsUrl }: LiveSkyProps) {
   } = useSkyStore();
 
   const settings = useSettingsStore();
+  const ceilingSettings = useCeilingSettings();
 
   const { airportLabels: airportsInRange, runways: runwaysInRange } = useMemo(
     () =>
@@ -61,48 +50,25 @@ export function LiveSky({ wsUrl }: LiveSkyProps) {
   );
 
   const rendererOptions = {
-
     showCallsign: settings.showCallsign,
-
     showAltitude: settings.showAltitude,
-
     showSpeed: settings.showSpeed,
-
     showHeading: settings.showHeading,
-
     showRoute: settings.showRoute,
-
     airportCodeFormat: settings.airportCodeFormat,
-
     showTrails: settings.showTrails,
-
     showRunways: settings.showRunways,
-
     showHorizon: settings.showHorizon,
-
     useAltitudeColor: settings.useAltitudeColor,
-
     useDistanceScale: settings.useDistanceScale,
-
     iconScale: settings.iconScale,
-
     selectedId,
-
     aircraftFilter: settings.aircraftFilter,
-
     interpolateMotion: settings.interpolateMotion,
-
     renderFpsMode: settings.renderFpsMode,
-
     renderFps: settings.renderFps,
-
     interpolationDurationMs: settings.refreshSecs * 1000,
-
-    ceilingBearingDeg: settings.ceilingBearingDeg,
-
   };
-
-
 
   const mapObserver = observer ?? {
     lat: settings.lat,
@@ -120,42 +86,24 @@ export function LiveSky({ wsUrl }: LiveSkyProps) {
     options: rendererOptions,
   };
 
-
-
   const onFullscreen = () => {
-
     const el = containerRef.current;
-
     if (!el) return;
-
     if (document.fullscreenElement) {
-
       void document.exitFullscreen();
-
     } else {
-
       void el.requestFullscreen();
-
     }
-
   };
 
-
-
   return (
-
     <div ref={containerRef} className="flex h-full flex-col bg-background">
-
       <div className="flex min-h-0 flex-1 gap-3 p-3">
-
         <aside className="w-56 shrink-0">
-
           <LeftPanel />
-
         </aside>
 
         <main className="flex min-w-0 flex-1 flex-col gap-2">
-
           <ViewModeSwitcher />
 
           <div
@@ -171,54 +119,35 @@ export function LiveSky({ wsUrl }: LiveSkyProps) {
             )}
 
             {settings.viewMode === "ceiling" && (
-              <CeilingProjectionView
+              <SkylightCeilingView
                 {...sceneProps}
                 observer={mapObserver}
-                radiusKm={settings.radiusKm}
-                dataTick={updatedAt ?? 0}
-                bearingDeg={settings.ceilingBearingDeg}
+                ceilingSettings={ceilingSettings}
                 bearingLocked={settings.ceilingBearingLocked}
                 onBearingChange={settings.setCeilingBearingDeg}
+                fetchTle={fetchTleFromBackend}
               />
             )}
 
             {settings.viewMode === "map" && (
-
               <DebugMapView
-
                 lat={settings.lat}
-
                 lon={settings.lon}
-
                 radiusKm={settings.radiusKm}
-
                 aircraft={aircraft}
-
                 selectedId={selectedId}
-
                 onSelect={selectAircraft}
-
               />
-
             )}
-
           </div>
-
         </main>
 
         <aside className="w-52 shrink-0">
-
           <RightPanel />
-
         </aside>
-
       </div>
 
       <StatusBar wsUrl={wsUrl} onFullscreen={onFullscreen} />
-
     </div>
-
   );
-
 }
-

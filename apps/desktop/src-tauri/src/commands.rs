@@ -59,6 +59,11 @@ pub fn set_data_mode(_mode: String, state: State<'_, Arc<AppState>>) -> Result<(
 }
 
 #[tauri::command]
+pub fn get_tle(state: State<'_, Arc<AppState>>) -> Vec<crate::tle::Tle> {
+    state.tle_store.get()
+}
+
+#[tauri::command]
 pub fn set_refresh_secs(refresh_secs: u64, state: State<'_, Arc<AppState>>) -> Result<(), String> {
     if refresh_secs < 1 || refresh_secs > 10 {
         return Err("refresh_secs must be between 1 and 10".into());

@@ -1,9 +1,23 @@
 import { useMemo, useState } from "react";
 import { filterSkyObjects, formatFlightRoute } from "@skyos/renderer";
 import { IconPlane, IconSearch } from "@tabler/icons-react";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { PanelCard } from "@/components/panel-card";
-import { cn } from "@/lib/utils";
 import { useSettingsStore } from "../stores/settingsStore";
 import { useSkyStore } from "../stores/skyStore";
 
@@ -42,6 +56,13 @@ export function RightPanel() {
   const selected = skyObjects.find((o) => o.id === selectedId);
   const selectedAc = aircraft.find((a) => a.id === selectedId);
 
+  const emptyMessage =
+    skyObjects.length === 0
+      ? emptyByFilter.all
+      : query.trim()
+        ? "No matches"
+        : emptyByFilter[aircraftFilter];
+
   return (
     <div className="flex h-full flex-col gap-3 overflow-hidden">
       <PanelCard
@@ -60,38 +81,40 @@ export function RightPanel() {
             className="pl-8"
           />
         </div>
-        <ul className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto text-xs">
+        <ScrollArea className="min-h-0 flex-1">
           {filtered.length === 0 ? (
-            <li className="text-muted-foreground">
-              {skyObjects.length === 0
-                ? emptyByFilter.all
-                : query.trim()
-                  ? "No matches"
-                  : emptyByFilter[aircraftFilter]}
-            </li>
+            <Empty className="border-0 py-6">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <IconPlane />
+                </EmptyMedia>
+                <EmptyTitle>{emptyMessage}</EmptyTitle>
+              </EmptyHeader>
+            </Empty>
           ) : (
-            filtered.map((obj) => (
-              <li key={obj.id}>
-                <button
-                  type="button"
-                  className={cn(
-                    "flex w-full cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-left transition-colors",
-                    selectedId === obj.id
-                      ? "bg-primary/15 text-primary"
-                      : "hover:bg-muted",
-                  )}
+            <ItemGroup className="gap-0.5">
+              {filtered.map((obj) => (
+                <Item
+                  key={obj.id}
+                  size="xs"
+                  variant={selectedId === obj.id ? "muted" : "default"}
+                  render={<button type="button" />}
                   onClick={() => selectAircraft(obj.id)}
                 >
-                  <IconPlane data-icon="inline-start" className="opacity-70" />
-                  <span className="font-medium">{obj.label}</span>
-                  <span className="ml-auto text-[10px] text-muted-foreground">
+                  <ItemMedia variant="icon">
+                    <IconPlane />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>{obj.label}</ItemTitle>
+                  </ItemContent>
+                  <ItemActions className="text-[10px] text-muted-foreground">
                     {obj.azimuthDeg.toFixed(0)}°/{obj.elevationDeg.toFixed(0)}°
-                  </span>
-                </button>
-              </li>
-            ))
+                  </ItemActions>
+                </Item>
+              ))}
+            </ItemGroup>
           )}
-        </ul>
+        </ScrollArea>
       </PanelCard>
 
       {selected ? (
